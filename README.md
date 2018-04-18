@@ -49,16 +49,3 @@ Once completed, and you're happy docker installs and runs, move the `-docker` ve
   roles:
     - devops.docker
 ```
-
-# We don't now, nor have we ever used the below in the Reform programme.
-
-- To configure server as docker swarm manager:
-
-```
-  vars:
-    docker_swarm_manager: true
-    docker_opts: []
-
-  roles:
-    - devops.docker
-```
