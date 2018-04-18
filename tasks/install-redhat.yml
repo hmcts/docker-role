@@ -1,0 +1,80 @@
+---
+# Installation steps based on https://docs.docker.com/engine/installation/linux/centos/
+
+# Available from Ansible v2.1
+- name: Add docker yum repository
+  yum_repository:
+    name:        docker
+    description: "Docker Repository"
+    baseurl:     "{{ docker_yum_repo_baseurl }}"
+    enabled:     yes
+    gpgcheck:    yes
+    gpgkey:      "{{ docker_yum_gpg_key_url }}"
+
+- name: Install epel-release repository configuration
+  yum:
+    name: "epel-release"
+    state: present
+
+- name: Install docker-engine
+  yum:
+    name: "docker-ce-{{ docker_engine_version|default('*') }}"
+    update_cache: yes
+    state: present
+
+- name: Install python-pip
+  yum:
+    name:  python-pip
+    state: present
+
+- name: Install docker-compose
+  pip:
+    name: docker-compose
+    version: "{{ docker_compose_version }}"
+    state: present
+    extra_args: "--index-url https://artifactory.reform.hmcts.net/artifactory/api/pypi/ext-pypi/simple"
+
+- name: Add users to docker group
+  user: name={{ item }} groups=docker append=yes createhome=no
+  with_items: "{{ docker_allow_users }}"
+
+- debug: var=docker_engine_opts
+
+- name: Create directory for docker service supplementary config
+  file:
+    path:  /etc/systemd/system/docker.service.d
+    owner: root
+    group: root
+    mode:  0755
+    state: directory
+
+- name: Create docker service supplementary config file
+  template:
+    src:   docker.service.conf.j2
+    dest:  /etc/systemd/system/docker.service.d/docker.conf
+    owner: root
+    group: root
+    mode:  0644
+  register: supplementary
+  notify:
+    - Reload systemd
+    - Restart docker
+
+- name: Create docker http-proxy config file
+  template:
+    src:   http-proxy.service.conf.j2
+    dest:  /etc/systemd/system/docker.service.d/http-proxy.conf
+    owner: root
+    group: root
+    mode:  0644
+  register: http_proxy_service
+  notify:
+    - Reload systemd
+    - Restart docker
+
+- name: Reload systemd if docker service supplementary config file changes
+  debug:
+    msg: "triggering systemctl daemon-reload"
+  notify:
+    - "Reload systemd"
+  when: supplementary|changed or http_proxy_service|changed

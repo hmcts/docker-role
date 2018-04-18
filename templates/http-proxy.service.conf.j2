@@ -1,0 +1,13 @@
+[Service]
+{% if docker_engine_https_proxy|default('false')  %}
+Environment="HTTPS_PROXY={{ docker_engine_https_proxy }}"
+Environment="https_proxy={{ docker_engine_https_proxy }}"
+{% endif %}
+{% if docker_engine_no_proxy|default('false')  %}
+Environment="NO_PROXY={{ docker_engine_no_proxy }}"
+Environment="no_proxy={{ docker_engine_no_proxy }}"
+{% endif %}
+{% if docker_engine_http_proxy|default('false')  %}
+Environment="HTTP_PROXY={{ docker_engine_http_proxy }}"
+Environment="http_proxy={{ docker_engine_http_proxy }}"
+{% endif %}

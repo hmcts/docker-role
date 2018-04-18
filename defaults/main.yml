@@ -1,0 +1,43 @@
+---
+docker_group: docker
+docker_allow_users: []      # Ensure users exist, mostly pulled from shared vars repo
+
+docker_yum_gpg_key_url: 'https://artifactory.reform.hmcts.net/artifactory/ext-docker/linux/centos/gpg'
+docker_yum_repo_baseurl: 'https://artifactory.reform.hmcts.net/artifactory/ext-docker/linux/centos/7/$basearch/stable'
+
+docker_engine_version:  '*'    # specify '*' for latest version, overridden in shared vars
+
+## Config
+docker_engine_opts: []
+docker_engine_http_proxy:
+docker_engine_https_proxy:
+docker_engine_no_proxy:
+docker_engine_tmp_dir:
+docker_engine_binary:
+docker_engine_port:     2375
+docker_engine_tls_port: 2376
+
+## docker-compose
+docker_compose_version: '1.*'   # specify '1.*' for latest minor version, overridden in shared vars
+
+## docker swarm --- Not in use within Reform
+docker_swarm_create_cluster:    false
+
+docker_swarm_port:      3375
+docker_swarm_tls_port:  3376
+docker_swarm_host_ip:  "{{ ansible_default_ipv4.address }}"
+
+docker_swarm_discovery_backend:                 # Mandatory
+docker_swarm_discovery_backend_url:             # Mandatory
+
+docker_swarm_manager: false
+docker_swarm_manager_command_args:
+docker_swarm_manager_command: "manage {{ docker_swarm_manager_command_args|default('') }} {{ docker_swarm_discovery_backend_url|mandatory }}"
+
+docker_swarm_node: false
+docker_swarm_node_command_args:
+docker_swarm_node_command: "join {{ docker_swarm_node_command_args|default('') }} {{ docker_swarm_discovery_backend_url|mandatory }}"
+docker_swarm_image_version: 1.2.5
+
+## Configures logrotate for /var/lib/docker/containers/*-json.log
+docker_container_logs_rotate: false

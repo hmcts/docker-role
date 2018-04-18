@@ -1,0 +1,14 @@
+---
+- hosts: all
+  vars:
+    docker_engine_opts:
+      # the only one that seems to work for docker in docker on azure hosts
+      - "-s vfs --registry-mirror=https://docker.artifactory.reform.hmcts.net"
+  roles:
+    - role: docker-role
+  tasks:
+    - name: "Test running a container"
+      command: docker run -i centos /bin/bash
+      changed_when: false
+      tags:
+        - skip-ansible-lint

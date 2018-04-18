@@ -1,0 +1,6 @@
+{% if docker_engine_opts|default('false')  %}
+[Service]
+ExecStart=
+ExecStart=/usr/bin/dockerd {{ docker_engine_opts|join(' ') }}
+MountFlags=slave
+{% endif %}

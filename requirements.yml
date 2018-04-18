@@ -1,0 +1,4 @@
+- name: docker-role
+  src: git@github.com:hmcts/docker-role.git
+  scm: git
+  version: master

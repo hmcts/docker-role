@@ -1,0 +1,32 @@
+---
+
+- name: Ensure cron is installed
+  yum:
+    name: cronie
+    state: present
+
+- name: Cron to docker system prune, not ideal
+  cron:
+    user: "root"
+    name: "docker-system-prune"
+    minute: "30"
+    hour: "0"
+    job: '/usr/bin/docker system prune -af 2>&1 | /usr/bin/logger -t docker-system-prune'
+  become: true
+
+- name: Cron to stop long (>3hrs) running docker containers, also not ideal
+  cron:
+    user: "root"
+    name: "docker-long-running-container-cleanup"
+    minute: "0"
+    job: 'for i in $(docker ps | grep "[3-9] hours ago\|days ago\|weeks ago" | cut -f1 -d" "); do docker stop $i; done 2>&1'
+  become: true
+
+- name: Prune old volumes
+  cron:
+    user: "root"
+    name: "docker-prune-volumes"
+    minute: "30"
+    hour: "1"
+    job: '/usr/bin/docker volume prune -f 2>&1 | /usr/bin/logger -t docker-volume-prune'
+  become: true

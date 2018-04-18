@@ -1,0 +1,36 @@
+---
+dependency:
+  name: galaxy
+
+driver:
+  name: vagrant
+
+vagrant:
+  raw_config_args:
+    - "ssh.pty = true"
+    - "vm.network :private_network, :libvirt__dhcp_enabled=> false ,:libvirt__tunnel_type => 'server', :libvirt__tunnel_port => '11111'"
+
+  platforms:
+    - name: centos7
+      box: centos/7
+
+  providers:
+    - name: libvirt
+      type: libvirt
+      options:
+        memory: 1024
+        cpus: 2
+
+  instances:
+    - name: vagrant-01
+      ansible_groups:
+        - group_1
+
+ansible:
+  playbook: tests/playbook.yml
+
+verifier:
+  name: testinfra
+
+_disabled:
+  - ansible_lint
