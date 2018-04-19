@@ -15,6 +15,8 @@ $ molecule test
 
 `molecule test` should be used, as it starts from a fresh setup.
 
+TODO: Roll these into one file, with checks denoted on the commandline. 
+
 ### Docker
 
 The reason this is a 'part' test, is because it doesn't let docker try to start, docker in docker brings its own problems.
