@@ -32,7 +32,6 @@
     name: docker-compose
     version: "{{ docker_compose_version }}"
     state: present
-    extra_args: "--index-url https://artifactory.reform.hmcts.net/artifactory/api/pypi/ext-pypi/simple"
 
 - name: Add users to docker group
   user: name={{ item }} groups=docker append=yes createhome=no
